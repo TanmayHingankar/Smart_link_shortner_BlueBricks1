@@ -20,15 +20,16 @@ export const getLinkAnalytics = async ({ ownerId, linkId, range }) => {
     throw new ApiError(422, "Invalid link id");
   }
 
-  // Ensure user owns the link (avoid analytics on others).
+
   const link = await Link.findOne({ _id: linkId, ownerId }).select("_id");
   if (!link) throw new ApiError(404, "Link not found");
 
   const days = parseRange(range);
   const startDate = days ? new Date(Date.now() - days * 24 * 60 * 60 * 1000) : null;
 
+
   const match = {
-    linkId: linkId,
+    linkId: new mongoose.Types.ObjectId(linkId),
   };
   if (startDate) {
     match.timestamp = { $gte: startDate };
@@ -77,11 +78,11 @@ export const getLinkAnalytics = async ({ ownerId, linkId, range }) => {
   ];
 
   const browserBreakdownPipeline = [
-    // No browser parsing implemented; use userAgent as the "browser" token bucket.
     { $match: match },
     {
       $group: {
-        _id: "$userAgent",
+       
+        _id: { $ifNull: ["$browser", "Unknown"] },
         clicks: { $sum: 1 },
       },
     },
@@ -91,14 +92,14 @@ export const getLinkAnalytics = async ({ ownerId, linkId, range }) => {
   ];
 
   const deviceBreakdownPipeline = [
-    // No device parsing implemented; default bucket.
     { $match: match },
     {
       $group: {
-        _id: "Unknown",
+        _id: { $ifNull: ["$device", "Unknown"] },
         clicks: { $sum: 1 },
       },
     },
+    { $sort: { clicks: -1 } },
     { $project: { _id: 0, device: "$_id", clicks: 1 } },
   ];
 
@@ -118,7 +119,6 @@ export const getLinkAnalytics = async ({ ownerId, linkId, range }) => {
     },
   ];
 
-  // IMPORTANT: Using aggregate() for all computation.
   const [
     totalAgg,
     overTimeAgg,
