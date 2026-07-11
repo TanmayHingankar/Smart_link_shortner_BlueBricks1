@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import Link from "../models/link.model.js";
 import ApiError from "../utils/apiError.js";
+import hotLinkCache from "../cache/hotLink.cache.js";
 
 const MAX_RETRY = 7;
 
@@ -23,14 +24,13 @@ const parseExpiry = (value) => {
 export const createShortCode = async (customAlias) => {
   const alias = normalizeAlias(customAlias);
 
-  // Custom alias support
+
   if (alias) {
     const exists = await Link.findOne({ customAlias: alias }).select("_id");
     if (exists) throw new ApiError(409, "Alias already exists");
     return alias;
   }
 
-  // NanoID short code generation + collision retry
   for (let i = 0; i < MAX_RETRY; i++) {
     const code = nanoid(7);
     const exists = await Link.exists({ shortCode: code });
@@ -54,15 +54,14 @@ export const createLink = async ({ ownerId, longUrl, customAlias, expiresAt }) =
       expiresAt: expiryDate ?? null,
     });
 
+    hotLinkCache.set(link.shortCode, link);
     return link;
   } catch (err) {
-    // Handle potential duplicate key races (shortCode/customAlias)
-    // Mongo/Mongoose duplicate key error code is 11000
+    
     if (err && err.code === 11000) {
-      // If alias was used, treat it as conflict
+    
       if (normalizedAlias) throw new ApiError(409, "Alias already exists");
 
-      // Otherwise retry short code generation
       for (let i = 0; i < MAX_RETRY; i++) {
         const code = nanoid(7);
         const exists = await Link.exists({ shortCode: code });
@@ -76,6 +75,7 @@ export const createLink = async ({ ownerId, longUrl, customAlias, expiresAt }) =
             customAlias: undefined,
             expiresAt: expiryDate ?? null,
           });
+          hotLinkCache.set(link.shortCode, link);
           return link;
         } catch (e) {
           if (e && e.code === 11000) continue;

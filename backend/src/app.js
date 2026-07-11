@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import config from "./config/index.js";
 import routes from "./routes/index.js";
+import redirectRoutes from "./routes/redirect.routes.js";
 import { notFound, errorHandler } from "./middlewares/error.js";
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api", routes);
+app.use("/", redirectRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

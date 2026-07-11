@@ -3,8 +3,9 @@ import Link from "../models/link.model.js";
 import ApiError from "../utils/apiError.js";
 import { ClickEvent } from "../models/clickEvent.model.js";
 import { hashIP } from "../utils/hash.js";
+import hotLinkCache from "../cache/hotLink.cache.js";
 
-
+export const invalidateLinkCache = (code) => hotLinkCache.delete(code);
 const resolveDeviceType = (type) => {
   if (!type) return "Desktop";
   if (type === "mobile") return "Mobile";
@@ -37,18 +38,22 @@ const getClientIP = (req) => {
 };
 
 export const findLinkByCode = async (code) => {
-  const link = await Link.findOne({ shortCode: code });
+  let link = hotLinkCache.get(code);
+  if (!link) {
+    link = await Link.findOne({ shortCode: code });
+    if (link) hotLinkCache.set(code, link);
+  }
 
   if (!link) {
     throw new ApiError(404, "Short link not found");
   }
-
-
   if (!link.isActive) {
+    hotLinkCache.delete(code);
     throw new ApiError(410, "This link has been deactivated");
   }
 
   if (link.expiresAt && link.expiresAt < new Date()) {
+    hotLinkCache.delete(code);
     throw new ApiError(410, "This link has expired");
   }
 
