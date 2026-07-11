@@ -25,6 +25,16 @@ const clickEventSchema = new mongoose.Schema(
       default: "",
     },
 
+    browser: {
+      type: String,
+      default: "Unknown",
+    },
+
+    device: {
+      type: String,
+      default: "Unknown",
+    },
+
     ipHash: {
       type: String,
       required: true,

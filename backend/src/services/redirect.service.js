@@ -1,7 +1,25 @@
+import { UAParser } from "ua-parser-js";
 import Link from "../models/link.model.js";
 import ApiError from "../utils/apiError.js";
 import { ClickEvent } from "../models/clickEvent.model.js";
 import { hashIP } from "../utils/hash.js";
+
+
+const resolveDeviceType = (type) => {
+  if (!type) return "Desktop";
+  if (type === "mobile") return "Mobile";
+  if (type === "tablet") return "Tablet";
+  return type.charAt(0).toUpperCase() + type.slice(1);
+};
+
+const parseUserAgent = (userAgent) => {
+  if (!userAgent) return { browser: "Unknown", device: "Unknown" };
+  const parsed = UAParser(userAgent);
+  return {
+    browser: parsed.browser?.name || "Unknown",
+    device: resolveDeviceType(parsed.device?.type),
+  };
+};
 
 const safeString = (v, fallback = "") => {
   if (v === undefined || v === null) return fallback;
@@ -9,7 +27,7 @@ const safeString = (v, fallback = "") => {
 };
 
 const getClientIP = (req) => {
-  // X-Forwarded-For: first value is the original client.
+ 
   const xff = req.headers["x-forwarded-for"];
   if (typeof xff === "string" && xff.trim()) {
     return xff.split(",")[0].trim();
@@ -25,12 +43,11 @@ export const findLinkByCode = async (code) => {
     throw new ApiError(404, "Short link not found");
   }
 
-  // Inactive link
+
   if (!link.isActive) {
     throw new ApiError(410, "This link has been deactivated");
   }
 
-  // Expired link
   if (link.expiresAt && link.expiresAt < new Date()) {
     throw new ApiError(410, "This link has expired");
   }
@@ -39,15 +56,15 @@ export const findLinkByCode = async (code) => {
 };
 
 export const recordClick = async ({ req, link }) => {
-  // Fire-and-forget: caller should not await this.
+
   try {
     const ip = getClientIP(req);
     const ipHash = hashIP(ip || "");
 
     const referrer = safeString(req.get("referer") || "Direct", "Direct");
     const userAgent = safeString(req.get("user-agent") || "", "");
+    const { browser, device } = parseUserAgent(userAgent);
 
-    // Country detection is not implemented. Keep default.
     const country = "Unknown";
 
     return ClickEvent.create({
@@ -55,11 +72,12 @@ export const recordClick = async ({ req, link }) => {
       timestamp: new Date(),
       referrer,
       userAgent,
+      browser,
+      device,
       ipHash,
       country,
     });
   } catch {
-    // Never block redirect flow.
     return undefined;
   }
 };
