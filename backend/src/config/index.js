@@ -26,6 +26,12 @@ export const config = {
     name: "refreshToken",
     path: "/api/auth",
   },
+  rateLimit: {
+    createWindowMs: Number(process.env.RL_CREATE_WINDOW_MS) || 60_000,
+    createMax: Number(process.env.RL_CREATE_MAX) || 10,
+    burstWindowMs: Number(process.env.RL_BURST_WINDOW_MS) || 10_000,
+    burstThreshold: Number(process.env.RL_BURST_THRESHOLD) || 30,
+  },
 };
 
 export const isProduction = config.nodeEnv === "production";
