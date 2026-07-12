@@ -72,28 +72,40 @@ This separation keeps the codebase modular, scalable and easy to maintain.
 ## Backend (.env)
 
 ```env
+# Application server port
 PORT=5000
 
+# Running environment
 NODE_ENV=development
 
-MONGO_URI= your_mongodb_connection_string
+# MongoDB connection string
+MONGO_URI=your_mongodb_connection_string
 
+# Frontend application URL
 CLIENT_URL=http://localhost:5173
 
-JWT_ACCESS_SECRET = your_access_secret
+# JWT access token secret key
+JWT_ACCESS_SECRET=your_access_secret
 
-JWT_REFRESH_SECRET = your_refresh_secret
+# JWT refresh token secret key
+JWT_REFRESH_SECRET=your_refresh_secret
 
+# Access token expiration time
 JWT_ACCESS_EXPIRES_IN=15m
 
+# Refresh token expiration time
 JWT_REFRESH_EXPIRES_IN=7d
 
+# Rate limit window for creating short links (milliseconds)
 RL_CREATE_WINDOW_MS=60000
 
+# Maximum links allowed within the create window
 RL_CREATE_MAX=10
 
+# Burst rate limit window (milliseconds)
 RL_BURST_WINDOW_MS=10000
 
+# Maximum requests allowed during burst window
 RL_BURST_THRESHOLD=30
 ```
 
