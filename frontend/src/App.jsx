@@ -10,6 +10,7 @@ import MyLinksPage from './pages/MyLinksPage.jsx'
 import AnalyticsPage from './pages/AnalyticsPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import ProtectedRoute from './routes/ProtectedRoute.jsx'
+import AppLayout from './components/AppLayout.jsx'
 
 export default function App() {
   return (
@@ -23,12 +24,13 @@ export default function App() {
 
         <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
 
-
         <Route
           path="/app/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <AppLayout>
+                <DashboardPage />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -36,7 +38,9 @@ export default function App() {
           path="/app/create"
           element={
             <ProtectedRoute>
-              <CreateLinkPage />
+              <AppLayout>
+                <CreateLinkPage />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -44,7 +48,9 @@ export default function App() {
           path="/app/links"
           element={
             <ProtectedRoute>
-              <MyLinksPage />
+              <AppLayout>
+                <MyLinksPage />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -52,7 +58,9 @@ export default function App() {
           path="/app/analytics"
           element={
             <ProtectedRoute>
-              <AnalyticsPage />
+              <AppLayout>
+                <AnalyticsPage />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -60,7 +68,9 @@ export default function App() {
           path="/app/profile"
           element={
             <ProtectedRoute>
-              <ProfilePage />
+              <AppLayout>
+                <ProfilePage />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -71,5 +81,10 @@ export default function App() {
     </>
   )
 }
+
+
+
+
+
 
 

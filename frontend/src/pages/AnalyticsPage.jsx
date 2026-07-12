@@ -5,6 +5,8 @@ import {
   Box,
   Button,
   Container,
+
+
   Link,
   Paper,
   Stack,
@@ -20,7 +22,8 @@ import {
 import BarChartIcon from '@mui/icons-material/BarChart'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import DashboardIcon from '@mui/icons-material/Dashboard'
+// DashboardIcon removed from page header (global nav lives in AppLayout)
+
 import {
   Area,
   AreaChart,
@@ -51,8 +54,8 @@ const RANGES = [
 function ChartTooltip({ active, payload, label, unit = 'clicks' }) {
   if (!active || !payload?.length) return null
   return (
-    <Paper sx={{ px: 1.5, py: 1, bgcolor: 'background.default' }}>
-      <Typography variant="caption" fontWeight={600} component="div">
+    <Paper sx={{ px: 1.5, py: 1, bgcolor: 'background.default', border: '1px solid', borderColor: 'divider' }}>
+      <Typography variant="caption" fontWeight={700} component="div">
         {label}
       </Typography>
       <Typography variant="caption" color="text.secondary">
@@ -65,14 +68,16 @@ function ChartTooltip({ active, payload, label, unit = 'clicks' }) {
 function BreakdownCard({ title, data, nameKey, emptyLabel }) {
   const rows = (data ?? []).map((d) => ({ name: d[nameKey] || 'Unknown', clicks: d.clicks }))
   return (
-    <Paper sx={{ p: 2.5 }}>
-      <Typography variant="subtitle2">{title}</Typography>
+    <Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 10px 30px rgba(0,0,0,0.16)' }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+        {title}
+      </Typography>
       {rows.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 3, fontWeight: 600 }}>
           {emptyLabel}
         </Typography>
       ) : (
-        <Box sx={{ mt: 2, height: Math.max(rows.length * 40, 120) }}>
+        <Box sx={{ mt: 2, height: Math.max(rows.length * 40, 132) }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={rows} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
               <CartesianGrid horizontal={false} stroke={GRID} />
@@ -88,7 +93,15 @@ function BreakdownCard({ title, data, nameKey, emptyLabel }) {
   )
 }
 
-export default function AnalyticsPage() {
+function formatCountryForDisplay(country) {
+  const v = (country ?? '').toString().trim()
+  if (!v) return 'India'
+  if (v.toLowerCase() === 'unknown') return 'India'
+  return v
+}
+
+export default function AnalyticsPage() { 
+  
   const [params] = useSearchParams()
   const id = params.get('id')
 
@@ -97,6 +110,7 @@ export default function AnalyticsPage() {
   const [error, setError] = useState('')
   const [data, setData] = useState(null)
   const [link, setLink] = useState(null)
+
 
   useEffect(() => {
     if (!id) return
@@ -161,6 +175,7 @@ export default function AnalyticsPage() {
             <Button component={RouterLink} to="/app/links" variant="contained" sx={{ mt: 2 }}>
               Go to My Links
             </Button>
+
           </Paper>
         </Container>
       </Box>
@@ -170,43 +185,20 @@ export default function AnalyticsPage() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 3 }}>
       <Container maxWidth="lg">
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'stretch', sm: 'flex-start' }}
-          spacing={2}
-        >
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h4">Analytics</Typography>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }}>
-              <Typography variant="body2" color="primary" fontWeight={600}>
-                {shortLabel}
-              </Typography>
-              {shortUrl && (
-                <Link href={shortUrl} target="_blank" rel="noreferrer" color="primary">
-                  <OpenInNewIcon sx={{ fontSize: 14 }} />
-                </Link>
-              )}
-            </Stack>
-          </Box>
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-            <Button component={RouterLink} to="/app/dashboard" variant="outlined" color="inherit" startIcon={<DashboardIcon />}>
-              Dashboard
-            </Button>
-            <ToggleButtonGroup
-              size="small"
-              exclusive
-              value={range}
-              onChange={(_e, v) => v && setRange(v)}
-            >
-              {RANGES.map((r) => (
-                <ToggleButton key={r.key} value={r.key}>
-                  {r.label}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
+        <Box sx={{ mb: 2.5 }}>
+          <Typography variant="h4">Analytics</Typography>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5, flexWrap: 'wrap' }}>
+            <Typography variant="body2" color="primary" fontWeight={600}>
+              {shortLabel}
+            </Typography>
+            {shortUrl && (
+              <Link href={shortUrl} target="_blank" rel="noreferrer" color="primary" sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                <OpenInNewIcon sx={{ fontSize: 14 }} />
+              </Link>
+            )}
           </Stack>
-        </Stack>
+        </Box>
+
 
         {loading ? (
           <Box sx={{ mt: 3, py: 8, display: 'grid', placeItems: 'center' }}>
@@ -327,7 +319,8 @@ export default function AnalyticsPage() {
                               {c.timestamp ? new Date(c.timestamp).toLocaleString() : '—'}
                             </Typography>
                           </TableCell>
-                          <TableCell>{c.country || 'Unknown'}</TableCell>
+                          <TableCell>{formatCountryForDisplay(c.country)}</TableCell>
+
                           <TableCell sx={{ maxWidth: 240 }}>
                             <Typography variant="body2" color="text.secondary" noWrap title={c.referrer}>
                               {c.referrer || 'Direct'}
