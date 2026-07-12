@@ -2,134 +2,28 @@
 
 A production-ready URL shortening platform built using React.js, Node.js, Express.js and MongoDB.
 
-The application allows users to create short URLs, manage them through a secure dashboard and analyze link performance using detailed click analytics. It includes JWT authentication, protected APIs, rate limiting, caching and a responsive SaaS-style interface.
+The application enables users to create secure short URLs, manage them through a responsive dashboard and monitor detailed click analytics. It combines modern frontend development with a scalable backend architecture, secure authentication and real-world software engineering practices.
 
 ---
 
-## Project Overview
+# Project Overview
 
-This project was developed to simulate a real-world URL shortening service similar to Bitly. Instead of focusing only on URL generation, the application emphasizes scalable backend architecture, secure authentication, analytics processing and a modern frontend experience.
+Smart Link Shortener is a full-stack web application inspired by modern URL shortening platforms like Bitly. The project goes beyond basic URL shortening by providing a complete link management system with authentication, analytics, security and an intuitive SaaS-style dashboard.
 
-Users can securely register, create short links, monitor click activity and manage all links from a centralized dashboard.
+Users can register securely, create and manage shortened links, monitor click performance, analyze browser and platform statistics and track recent activity through interactive visualizations.
 
----
-
-## Key Features
-
-### Authentication
-
-- User Registration
-- Secure Login
-- JWT Authentication
-- Refresh Token Support
-- Protected Routes
-- Logout
-
-### Link Management
-
-- Create Short Links
-- Custom Short Codes
-- Link Expiration Support
-- Search & Filter
-- Delete Links
-- Copy Short URL
-- User Specific Links
-
-### Analytics
-
-- Total Clicks
-- Daily Click Statistics
-- Browser Analytics
-- Operating System Analytics
-- Platform Analytics
-- Recent Click Activity
-
-### Dashboard
-
-- Statistics Cards
-- Recent Links
-- Analytics Overview
-- Quick Actions
-- Responsive Layout
-
-### Security
-
-- JWT Authentication
-- Password Hashing
-- Zod Validation
-- Rate Limiting
-- Protected APIs
-- Error Handling
-
-### Frontend
-
-- Responsive Design
-- Tailwind CSS
-- Modern Dashboard
-- Loading States
-- Empty States
-- Charts using Recharts
-- Dark Theme
-
----
-
-## Tech Stack
-
-### Frontend
-
-- React.js
-- Vite
-- Tailwind CSS
-- React Router DOM
-- Axios
-- Recharts
-- Framer Motion
-- React Hot Toast
-- Lucide React
-
-### Backend
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- bcrypt
-- Zod
-- Express Rate Limit
-
-### Development Tools
-
-- Git
-- GitHub
-- VS Code
-- Postman
-- npm
-
----
-
-## Project Highlights
-
-- Production-ready Backend
-- RESTful API Design
-- Modular Folder Structure
-- Secure Authentication
-- Analytics Dashboard
-- Responsive SaaS UI
-- Reusable React Components
-- Protected Routing
-- Clean Code Architecture
-- Easy Deployment
+The application follows a modular architecture where the frontend and backend are cleanly separated, making the project scalable, maintainable and production-ready.
 
 ---
 
 # Project Structure
 
-```
+```text
 Smart-Link-Shortener/
 │
 ├── backend/
 │   ├── src/
+│   │   ├── cache/
 │   │   ├── config/
 │   │   ├── controllers/
 │   │   ├── middlewares/
@@ -138,7 +32,6 @@ Smart-Link-Shortener/
 │   │   ├── services/
 │   │   ├── utils/
 │   │   ├── validations/
-│   │   ├── cache/
 │   │   ├── app.js
 │   │   └── server.js
 │   │
@@ -150,79 +43,286 @@ Smart-Link-Shortener/
 │   ├── src/
 │   │   ├── api/
 │   │   ├── components/
+│   │   ├── config/
 │   │   ├── context/
 │   │   ├── pages/
 │   │   ├── routes/
 │   │   ├── styles/
-│   │   ├── config/
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   │
 │   ├── package.json
-│   └── vite.config.js
+│   ├── vite.config.js
+│   └── .env
 │
 └── README.md
 ```
 
+The project is divided into two independent applications:
+
+- **Backend** handles authentication, URL shortening, analytics and database operations.
+- **Frontend** provides a responsive SaaS dashboard for users to manage links and view analytics.
+
+This separation keeps the codebase modular, scalable and easy to maintain.
+
 ---
 
+# Environment Variables
+
+## Backend (.env)
+
+```env
+PORT=5000
+
+NODE_ENV=development
+
+MONGO_URI=your_mongodb_connection_string
+
+CLIENT_URL=http://localhost:5173
+
+JWT_ACCESS_SECRET=your_access_secret
+
+JWT_REFRESH_SECRET=your_refresh_secret
+
+JWT_ACCESS_EXPIRES_IN=15m
+
+JWT_REFRESH_EXPIRES_IN=7d
+```
+
+## Frontend (.env)
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+---
+
+# How to Setup & Run
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/Smart-Link-Shortener.git
+
+cd Smart-Link-Shortener
+```
+
+---
+
+## 2. Install Backend Dependencies
+
+```bash
+cd backend
+
+npm install
+```
+
+---
+
+## 3. Configure Backend Environment
+
+Create a `.env` file inside the backend folder and add the required environment variables.
+
+```env
+PORT=5000
+
+NODE_ENV=development
+
+MONGO_URI=your_mongodb_connection_string
+
+CLIENT_URL=http://localhost:5173
+
+JWT_ACCESS_SECRET=your_access_secret
+
+JWT_REFRESH_SECRET=your_refresh_secret
+
+JWT_ACCESS_EXPIRES_IN=15m
+
+JWT_REFRESH_EXPIRES_IN=7d
+```
+
+---
+
+## 4. Start the Backend Server
+
+```bash
+npm run dev
+```
+
+Backend will start at:
+
+```
+http://localhost:5000
+```
+
+---
+
+## 5. Install Frontend Dependencies
+
+Open another terminal.
+
+```bash
+cd frontend
+
+npm install
+```
+
+---
+
+## 6. Configure Frontend Environment
+
+Create a `.env` file inside the frontend folder.
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+---
+
+## 7. Start the Frontend
+
+```bash
+npm run dev
+```
+
+Frontend will start at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 8. Open the Application
+
+Visit the following URL in your browser:
+
+```
+http://localhost:5173
+```
 # Application Architecture
 
 ```
-                React Frontend
-                       │
-                React Router DOM
-                       │
-                 Axios API Client
-                       │
-                Express REST APIs
-                       │
-        Authentication Middleware
-                       │
-              Controllers Layer
-                       │
-               Business Services
-                       │
-                 MongoDB Database
+                    React Frontend
+                           │
+                           ▼
+                 React Router DOM
+                           │
+                           ▼
+                  Axios API Service
+                           │
+                           ▼
+                  Express REST APIs
+                           │
+          Authentication Middleware
+                           │
+                           ▼
+                   Controller Layer
+                           │
+                           ▼
+                    Service Layer
+                           │
+                           ▼
+                  MongoDB Database
 ```
 
-The application follows a layered architecture where each layer has a single responsibility. This improves maintainability, scalability and code organization.
+The application follows a layered architecture where every layer has a clearly defined responsibility.
+
+- **Frontend** handles the user interface and user interactions.
+- **Axios** acts as the communication layer between the frontend and backend.
+- **Express APIs** receive and process client requests.
+- **Authentication Middleware** secures protected routes using JWT.
+- **Controllers** handle request validation and response formatting.
+- **Services** contain business logic such as URL generation and analytics processing.
+- **MongoDB** stores users, links and click analytics.
+
+This architecture improves maintainability, scalability and separation of concerns.
 
 ---
 
 # Backend Architecture
 
-The backend is organized into independent modules.
+The backend follows a modular structure where every feature is separated into independent layers.
 
 | Module | Responsibility |
 |---------|---------------|
-| Config | Environment configuration |
-| Routes | API endpoints |
-| Controllers | Handle HTTP requests |
-| Services | Business logic |
-| Models | MongoDB schemas |
+| Config | Environment configuration and application settings |
+| Routes | Defines all REST API endpoints |
+| Controllers | Handles incoming HTTP requests and responses |
+| Services | Contains business logic and application rules |
+| Models | MongoDB schemas and database interaction |
 | Middlewares | Authentication, validation and rate limiting |
+| Validations | Request validation using Zod |
 | Utils | Shared helper functions |
-| Cache | Frequently accessed redirect data |
+| Cache | Redirect caching and performance optimization |
 
-This separation keeps the codebase clean and makes future enhancements easier.
+### Backend Workflow
+
+```
+HTTP Request
+      │
+      ▼
+Express Router
+      │
+      ▼
+Authentication Middleware
+      │
+      ▼
+Validation Middleware
+      │
+      ▼
+Controller
+      │
+      ▼
+Service Layer
+      │
+      ▼
+MongoDB
+      │
+      ▼
+HTTP Response
+```
+
+This layered approach keeps the backend clean, reusable and easy to extend.
 
 ---
 
 # Frontend Architecture
 
-The frontend is built using reusable components and modular routing.
+The frontend is built using reusable React components and follows a modular folder structure.
 
 | Module | Responsibility |
 |---------|---------------|
 | Pages | Application screens |
 | Components | Reusable UI components |
+| Context | Authentication state management |
 | API | Axios service layer |
-| Context | Authentication state |
 | Routes | Protected routing |
+| Config | Application configuration |
 | Styles | Global styling |
 
-This structure keeps UI logic separated from API communication and improves component reusability.
+### Frontend Workflow
+
+```
+User
+ │
+ ▼
+React Pages
+ │
+ ▼
+Reusable Components
+ │
+ ▼
+Axios API Layer
+ │
+ ▼
+Backend APIs
+ │
+ ▼
+Updated UI
+```
+
+The modular structure makes the frontend scalable and simplifies future feature development.
 
 ---
 
@@ -232,10 +332,10 @@ This structure keeps UI logic separated from API communication and improves comp
 User
  │
  ▼
-Login/Register
+Register / Login
  │
  ▼
-Backend Authentication API
+Authentication API
  │
  ▼
 JWT Access Token
@@ -247,7 +347,14 @@ Protected Routes
 Dashboard Access
 ```
 
-Only authenticated users can access protected pages such as Dashboard, Link Management and Analytics.
+### Authentication Process
+
+1. User registers or logs in.
+2. Backend validates the credentials.
+3. JWT Access Token and Refresh Token are generated.
+4. Protected routes verify the access token.
+5. Authorized users can access Dashboard, Links and Analytics.
+6. Refresh tokens allow seamless session renewal.
 
 ---
 
@@ -257,7 +364,10 @@ Only authenticated users can access protected pages such as Dashboard, Link Mana
 Original URL
       │
       ▼
-Create Link API
+Create Link Request
+      │
+      ▼
+Validate URL
       │
       ▼
 Generate Short Code
@@ -269,70 +379,119 @@ Store in MongoDB
 Return Short URL
 ```
 
-When a user creates a link, the backend generates a unique short code, stores it in MongoDB and returns the shortened URL.
+### Process
+
+- User submits a long URL.
+- Backend validates the request.
+- A unique short code is generated.
+- Link information is stored in MongoDB.
+- The generated short URL is returned to the user.
 
 ---
 
 # Redirect Flow
 
 ```
-User opens Short URL
+User Opens Short URL
           │
           ▼
-Redirect API
+Receive Short Code
           │
           ▼
-Validate Short Code
+Validate Link
           │
           ▼
-Store Click Analytics
+Record Click Analytics
+          │
+          ▼
+Increase Click Count
           │
           ▼
 Redirect to Original URL
 ```
 
-Each redirect request is tracked before redirecting the user to the destination URL.
+### Process
+
+Whenever a visitor opens a shortened URL:
+
+- The short code is validated.
+- Link status is verified.
+- Click analytics are captured.
+- Browser and platform information are stored.
+- Total click count is updated.
+- The visitor is redirected to the original destination.
 
 ---
 
 # Analytics Flow
 
 ```
-Short URL Click
-        │
-        ▼
-Capture Click Event
-        │
-        ▼
+User Click
+     │
+     ▼
+Capture Event
+     │
+     ▼
 Store Analytics
-        │
-        ▼
+     │
+     ▼
 Aggregate Statistics
-        │
-        ▼
+     │
+     ▼
 Dashboard Charts
 ```
 
-Analytics data is aggregated and displayed through interactive charts in the dashboard, allowing users to monitor link performance.
+### Analytics Captured
+
+- Total Clicks
+- Daily Click Statistics
+- Browser Distribution
+- Operating System Distribution
+- Platform Analytics
+- Recent Click Activity
+
+The analytics dashboard aggregates this data and presents it using interactive charts and summary cards, allowing users to monitor link performance efficiently.
 
 ---
 
 # Design Principles
 
-The project was developed with the following principles:
+The project was designed using modern software engineering principles.
 
-- Modular Architecture
+### Architecture
+
+- Modular Folder Structure
 - Separation of Concerns
-- Reusable Components
-- RESTful API Design
-- Responsive UI
-- Secure Authentication
-- Scalable Backend Structure
-- Clean Folder Organization
-- Maintainable Codebase
-- Production-Oriented Development
+- Layered Backend Architecture
+- Reusable React Components
 
----
+### Backend
+
+- RESTful API Design
+- Secure Authentication
+- Request Validation
+- Rate Limiting
+- Error Handling
+- Clean Business Logic
+
+### Frontend
+
+- Responsive UI
+- Reusable Components
+- Protected Routing
+- Modern Dashboard Design
+- Interactive Charts
+- Clean User Experience
+
+### Development
+
+- Scalable Codebase
+- Maintainable Structure
+- Production-Oriented Development
+- Readable and Consistent Code
+- Easy Future Enhancements
+
+These principles ensure that the application remains secure, maintainable and easy to extend as new features are added.
 
 ---
 
@@ -344,7 +503,7 @@ The project was developed with the following principles:
 |---------|----------|-------------|
 | POST | `/api/auth/register` | Register a new user |
 | POST | `/api/auth/login` | Login user |
-| POST | `/api/auth/refresh` | Generate new access token |
+| POST | `/api/auth/refresh` | Generate a new access token |
 | POST | `/api/auth/logout` | Logout user |
 
 ---
@@ -356,8 +515,8 @@ The project was developed with the following principles:
 | POST | `/api/links` | Create a short link |
 | GET | `/api/links` | Get all user links |
 | GET | `/api/links/:id` | Get a specific link |
-| PATCH | `/api/links/:id` | Update link |
-| DELETE | `/api/links/:id` | Delete link |
+| PATCH | `/api/links/:id` | Update an existing link |
+| DELETE | `/api/links/:id` | Delete a link |
 
 ---
 
@@ -375,16 +534,16 @@ The project was developed with the following principles:
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/:shortCode` | Redirect to original URL |
+| GET | `/:shortCode` | Redirect user to the original URL |
 
 ---
 
 # Database Models
 
-### User
+## User
 
 | Field | Type |
-|-------|------|
+|--------|------|
 | Name | String |
 | Email | String |
 | Password | String (Hashed) |
@@ -393,10 +552,10 @@ The project was developed with the following principles:
 
 ---
 
-### Link
+## Link
 
 | Field | Type |
-|-------|------|
+|--------|------|
 | Original URL | String |
 | Short Code | String |
 | User ID | ObjectId |
@@ -406,10 +565,10 @@ The project was developed with the following principles:
 
 ---
 
-### Click Event
+## Click Event
 
 | Field | Type |
-|-------|------|
+|--------|------|
 | Link ID | ObjectId |
 | Browser | String |
 | Platform | String |
@@ -422,6 +581,8 @@ The project was developed with the following principles:
 
 # Security Features
 
+The application follows modern security practices to protect user data and APIs.
+
 - JWT Authentication
 - Refresh Token Authentication
 - Password Hashing using bcrypt
@@ -431,110 +592,51 @@ The project was developed with the following principles:
 - Error Handling Middleware
 - Secure Environment Variables
 - MongoDB Schema Validation
+- Input Sanitization
+- Authentication Middleware
+- Secure Password Storage
 
 ---
 
 # Frontend Features
 
-- React Context Authentication
+The frontend provides a clean and responsive SaaS dashboard with reusable components.
+
+- User Authentication
 - Protected Routes
-- Axios API Layer
-- Responsive Dashboard
-- Reusable UI Components
-- Analytics Charts
+- Dashboard Overview
+- Statistics Cards
+- Link Management
+- URL Shortening
 - Search & Filter
-- Loading Skeletons
+- Copy Short URL
+- Analytics Dashboard
+- Browser Analytics
+- Platform Analytics
+- Recent Click Activity
+- Responsive Design
+- Loading States
+- Empty States
 - Toast Notifications
-- Dark Theme
-- Mobile Responsive Layout
+- Dark Theme Support
 
 ---
 
-# Environment Variables
-
-### Backend
-
-```env
-PORT=5000
-
-MONGO_URI=your_mongodb_connection_string
-
-JWT_SECRET=your_access_token_secret
-
-JWT_REFRESH_SECRET=your_refresh_token_secret
-
-CLIENT_URL=http://localhost:5173
-```
-
-### Frontend
-
-```env
-VITE_API_BASE_URL=http://localhost:5000/api
-```
-
----
-
-# Installation
-
-## Clone Repository
-
-```bash
-git clone https://github.com/your-username/Smart-Link-Shortener.git
-
-cd Smart-Link-Shortener
-```
-
----
-
-## Backend Setup
-
-```bash
-cd backend
-
-npm install
-
-npm run dev
-```
-
-Backend runs on:
-
-```
-http://localhost:5000
-```
-
----
-
-## Frontend Setup
-
-```bash
-cd frontend
-
-npm install
-
-npm run dev
-```
-
-Frontend runs on:
-
-```
-http://localhost:5173
-```
-
----
-
-# Technologies Used
+# Tech Stack
 
 ## Frontend
 
 - React.js
 - Vite
 - Tailwind CSS
-- React Router
+- React Router DOM
 - Axios
 - Recharts
 - Framer Motion
 - React Hot Toast
 - Lucide React
+
+---
 
 ## Backend
 
@@ -542,15 +644,18 @@ http://localhost:5173
 - Express.js
 - MongoDB
 - Mongoose
-- JWT
+- JWT Authentication
 - bcrypt
-- Zod
+- Zod Validation
+- Express Rate Limit
+
+---
 
 ## Development Tools
 
 - Git
 - GitHub
-- VS Code
+- Visual Studio Code
 - Postman
 - npm
 
@@ -558,43 +663,46 @@ http://localhost:5173
 
 # Performance Optimizations
 
+The project includes multiple optimizations for scalability and performance.
+
 - Route Protection
-- Modular API Design
 - Cached Redirects
-- Rate Limiting
+- Modular API Design
 - Optimized MongoDB Queries
 - Aggregation Pipelines
-- Reusable Components
+- Rate Limiting
+- Reusable React Components
 - Lazy Loaded Pages
+- Efficient State Management
 - Responsive Layout
-- Clean Code Architecture
-
----
+- Clean Folder Structure
 
 ---
 
 # Future Enhancements
 
-The following improvements can be added in future releases:
+The following features can be added in future releases.
 
 - QR Code Generation
-- Custom Domain Support
+- Custom Domains
 - Team Workspaces
 - Link Password Protection
-- Email Notifications
 - Public Analytics Dashboard
+- Email Notifications
+- Redis Caching
 - Docker Support
 - CI/CD Pipeline
-- Redis Integration
 - AWS Deployment
+- Export Analytics Reports
+- Custom Themes
 
 ---
 
 # Testing
 
-The application was tested for the following scenarios:
+The application was tested for the following scenarios.
 
-### Authentication
+## Authentication
 
 - User Registration
 - User Login
@@ -602,37 +710,46 @@ The application was tested for the following scenarios:
 - Protected Routes
 - Logout
 
-### Link Management
+---
+
+## Link Management
 
 - Create Link
+- Update Link
 - Delete Link
 - Search Links
 - Copy Short URL
-- Redirect
+- Redirect Validation
 
-### Analytics
+---
+
+## Analytics
 
 - Click Tracking
 - Dashboard Statistics
 - Browser Analytics
 - Platform Analytics
 - Recent Click Activity
+- Chart Rendering
 
 ---
 
 # Project Outcome
 
-This project demonstrates practical implementation of:
+This project demonstrates practical implementation of modern full-stack application development.
+
+Key outcomes include:
 
 - REST API Development
 - JWT Authentication
-- Full Stack Development
+- URL Shortening System
+- Analytics Processing
 - React Dashboard Development
 - MongoDB Data Modeling
-- Analytics Processing
-- Secure Backend Architecture
 - Responsive UI Design
+- Production-Ready Architecture
 - Modular Code Structure
+- Secure Backend Development
 
 ---
 
@@ -640,14 +757,16 @@ This project demonstrates practical implementation of:
 
 Through this project, I gained hands-on experience in:
 
-- Designing scalable REST APIs
-- Implementing secure authentication
-- Building reusable React components
+- Building scalable REST APIs
+- Implementing JWT Authentication
+- Designing reusable React components
 - Managing application state
 - Working with MongoDB and Mongoose
-- Developing analytics features
+- Creating analytics dashboards
+- Implementing secure backend architecture
+- Following clean code principles
 - Structuring production-ready applications
-- Following clean code practices
+- Developing responsive SaaS interfaces
 
 ---
 
@@ -655,7 +774,7 @@ Through this project, I gained hands-on experience in:
 
 Contributions, suggestions and improvements are welcome.
 
-If you find any issues or have ideas to improve the project, feel free to open an issue or submit a pull request.
+If you discover any bugs or have ideas for enhancements, feel free to fork the repository, create a feature branch and submit a pull request.
 
 ---
 
@@ -665,18 +784,24 @@ This project is developed for educational and learning purposes.
 
 ---
 
-# Author
+# Authors
 
 **Tanmay Hingankar**
 
 **Rohan Thakur**
-
 ---
 
-## Project Summary
+# Project Summary
 
-Smart Link Shortener is a production-ready full-stack application that combines secure authentication, URL shortening, analytics and a modern React dashboard into a single scalable solution.
+Smart Link Shortener with Analytics is a production-ready full-stack application that combines secure authentication, intelligent URL shortening, real-time analytics and a modern SaaS dashboard into a scalable solution.
 
-The project follows a modular architecture with a strong focus on maintainability, clean code and real-world software engineering practices.
+The project demonstrates industry-standard software engineering practices including modular architecture, reusable components, secure authentication, RESTful API development, analytics processing and responsive UI design.
+
+Built using React.js, Node.js, Express.js and MongoDB, the application showcases how modern web applications are designed with scalability, maintainability and performance in mind.
+
+Whether creating shortened links, monitoring click analytics or managing user-specific URLs, the application provides a complete end-to-end experience similar to real-world URL shortening platforms.
+
+---
+Register a new account or login with existing credentials to access the dashboard and begin creating short links.
 
 ---
