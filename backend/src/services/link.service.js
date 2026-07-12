@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 import Link from "../models/link.model.js";
+import { ClickEvent } from "../models/clickEvent.model.js";
 import ApiError from "../utils/apiError.js";
 import hotLinkCache from "../cache/hotLink.cache.js";
 
@@ -92,5 +93,43 @@ export const createLink = async ({ ownerId, longUrl, customAlias, expiresAt }) =
 
 export const getUserLinks = async (ownerId) => {
   return await Link.find({ ownerId }).sort({ createdAt: -1 });
+};
+
+export const getUserLinkStats = async (ownerId) => {
+  const now = new Date();
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const links = await Link.find({ ownerId }).select("_id isActive expiresAt");
+
+  const totalLinks = links.length;
+  const activeLinks = links.filter(
+    (l) => l.isActive && (!l.expiresAt || l.expiresAt.getTime() > now.getTime())
+  ).length;
+
+  if (totalLinks === 0) {
+    return { totalLinks: 0, activeLinks: 0, totalClicks: 0, todaysClicks: 0 };
+  }
+
+  const linkIds = links.map((l) => l._id);
+  const [agg] = await ClickEvent.aggregate([
+    { $match: { linkId: { $in: linkIds } } },
+    {
+      $group: {
+        _id: null,
+        totalClicks: { $sum: 1 },
+        todaysClicks: {
+          $sum: { $cond: [{ $gte: ["$timestamp", startOfToday] }, 1, 0] },
+        },
+      },
+    },
+  ]);
+
+  return {
+    totalLinks,
+    activeLinks,
+    totalClicks: agg?.totalClicks || 0,
+    todaysClicks: agg?.todaysClicks || 0,
+  };
 };
 

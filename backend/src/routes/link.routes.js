@@ -6,8 +6,10 @@ import { createLinkSchema } from "../validations/link.validation.js";
 import {
   create,
   list,
+  stats,
 } from "../controllers/link.controller.js";
 const router = Router();
+router.get("/stats", protect, stats);
 router.get("/", protect, list);
 router.post("/", protect, linkCreationLimiter, validate(createLinkSchema), create);
 

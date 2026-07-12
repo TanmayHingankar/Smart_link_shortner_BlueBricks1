@@ -1,11 +1,16 @@
-import { Loader2 } from 'lucide-react'
+import { Box, CircularProgress, Typography } from '@mui/material'
 
 export default function Loader({ label = 'Loading…' }) {
   return (
-    <div className="inline-flex items-center gap-2 text-sm text-[#9CA3AF]" role="status" aria-live="polite">
-      <Loader2 className="h-4 w-4 animate-spin" />
-      <span>{label}</span>
-    </div>
+    <Box
+      role="status"
+      aria-live="polite"
+      sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, color: 'text.secondary' }}
+    >
+      <CircularProgress size={18} thickness={5} color="primary" />
+      <Typography variant="body2" color="text.secondary">
+        {label}
+      </Typography>
+    </Box>
   )
 }
-
