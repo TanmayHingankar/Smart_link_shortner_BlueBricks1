@@ -1,22 +1,48 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { motion } from 'framer-motion'
-import { Loader2, Mail, UserPlus, LockKeyhole } from 'lucide-react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  InputAdornment,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material'
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
-import { Link, useNavigate } from 'react-router-dom'
+
+const REASONS = [
+  { title: 'Fast UX', desc: 'Loading states, empty states, and premium UI polish.' },
+  { title: 'Actionable analytics', desc: 'Charts that help you understand clicks by device and country.' },
+  { title: 'Secure auth', desc: 'Refresh tokens in httpOnly cookies; no frontend secrets.' }
+]
 
 export default function RegisterPage() {
   const navigate = useNavigate()
   const { register, authLoading, refreshAndGetMe } = useAuth()
   const [formError, setFormError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register: rhfRegister,
     handleSubmit,
     formState: { errors, isSubmitting }
-  } = useForm({
-    defaultValues: { name: '', email: '', password: '' }
+  } = useForm({ defaultValues: { name: '', email: '', password: '' } })
+
+  const { ref: nameRef, ...nameField } = rhfRegister('name', { required: 'Name is required' })
+  const { ref: emailRef, ...emailField } = rhfRegister('email', { required: 'Email is required' })
+  const { ref: passwordRef, ...passwordField } = rhfRegister('password', {
+    required: 'Password is required',
+    minLength: { value: 6, message: 'Password must be at least 6 characters' }
   })
 
   const onSubmit = async (values) => {
@@ -33,151 +59,121 @@ export default function RegisterPage() {
     }
   }
 
+  const busy = authLoading || isSubmitting
+
   return (
-    <div className="min-h-screen bg-[#0B1220] text-[#F9FAFB]">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] shadow-soft flex items-center justify-center">
-              <UserPlus className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <div className="text-lg font-semibold tracking-tight">Smart Link</div>
-              <div className="text-xs text-[#9CA3AF]">Create, analyze, and optimize</div>
-            </div>
-          </div>
-        </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: { xs: 5, sm: 7 } }}>
+      <Container maxWidth="lg">
+        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 5 }}>
+          <Paper sx={{ width: 40, height: 40, display: 'grid', placeItems: 'center' }}>
+            <PersonAddAlt1Icon color="primary" fontSize="small" />
+          </Paper>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700}>
+              Smart Link
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Create, analyze, and optimize
+            </Typography>
+          </Box>
+        </Stack>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-gradient-to-b from-[#111827] to-[#0B1220] p-7 shadow-soft"
-          >
-            <div className="text-3xl font-semibold tracking-tight">Create account</div>
-            <div className="mt-2 text-sm text-[#9CA3AF]">
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 3,
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            alignItems: 'stretch'
+          }}
+        >
+          <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+            <Typography variant="h4" gutterBottom>
+              Create account
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
               Premium SaaS analytics for all your shortened links.
-            </div>
+            </Typography>
 
-            <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-4">
-                <label className="block">
-                  <div className="text-sm text-[#9CA3AF]">Name</div>
-                  <input
-                    aria-label="Name"
-                    className="mt-2 w-full rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] px-4 py-3 text-[#F9FAFB] placeholder-[#9CA3AF] shadow-soft focus:border-primary/60"
-                    placeholder="Jane Doe"
-                    type="text"
-                    {...rhfRegister('name', { required: 'Name is required' })}
-                  />
-                  {errors.name?.message && (
-                    <div className="mt-2 text-xs text-danger" role="alert">
-                      {errors.name.message}
-                    </div>
-                  )}
-                </label>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+              <Stack spacing={2.5}>
+                <TextField
+                  label="Name"
+                  fullWidth
+                  placeholder="Jane Doe"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  inputRef={nameRef}
+                  {...nameField}
+                />
+                <TextField
+                  label="Email"
+                  type="email"
+                  fullWidth
+                  placeholder="you@company.com"
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  inputRef={emailRef}
+                  {...emailField}
+                />
+                <TextField
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  fullWidth
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword((v) => !v)}
+                            edge="end"
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }
+                  }}
+                  inputRef={passwordRef}
+                  {...passwordField}
+                />
 
-                <label className="block">
-                  <div className="flex items-center gap-2 text-sm text-[#9CA3AF]">
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </div>
-                  <input
-                    aria-label="Email"
-                    className="mt-2 w-full rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] px-4 py-3 text-[#F9FAFB] placeholder-[#9CA3AF] shadow-soft focus:border-primary/60"
-                    placeholder="you@company.com"
-                    type="email"
-                    {...rhfRegister('email', { required: 'Email is required' })}
-                  />
-                  {errors.email?.message && (
-                    <div className="mt-2 text-xs text-danger" role="alert">
-                      {errors.email.message}
-                    </div>
-                  )}
-                </label>
+                {formError && <Alert severity="error">{formError}</Alert>}
 
-                <label className="block">
-                  <div className="flex items-center gap-2 text-sm text-[#9CA3AF]">
-                    <LockKeyhole className="h-4 w-4" />
-                    Password
-                  </div>
-                  <input
-                    aria-label="Password"
-                    className="mt-2 w-full rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] px-4 py-3 text-[#F9FAFB] placeholder-[#9CA3AF] shadow-soft focus:border-primary/60"
-                    placeholder="••••••••"
-                    type="password"
-                    {...rhfRegister('password', {
-                      required: 'Password is required',
-                      minLength: { value: 6, message: 'Password must be at least 6 characters' }
-                    })}
-                  />
-                  {errors.password?.message && (
-                    <div className="mt-2 text-xs text-danger" role="alert">
-                      {errors.password.message}
-                    </div>
-                  )}
-                </label>
+                <Button type="submit" variant="contained" size="large" fullWidth disabled={busy}>
+                  {busy ? 'Creating…' : 'Create account'}
+                </Button>
+              </Stack>
 
-                {formError ? (
-                  <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger" role="alert">
-                    {formError}
-                  </div>
-                ) : null}
-
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={authLoading || isSubmitting}
-                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 font-semibold text-[#0B1220] shadow-soft hover:bg-hover disabled:opacity-60"
-                >
-                  {authLoading || isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Creating…
-                    </>
-                  ) : (
-                    <>Create account</>
-                  )}
-                </motion.button>
-              </div>
-
-              <div className="mt-5 text-center text-sm text-[#9CA3AF]">
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2.5 }}>
                 Already have an account?{' '}
-                <Link className="text-primary hover:text-hover" to="/login">
+                <Link component={RouterLink} to="/login" underline="hover">
                   Sign in
                 </Link>
-              </div>
-            </form>
-          </motion.div>
+              </Typography>
+            </Box>
+          </Paper>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.05 }}
-            className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] p-7 shadow-soft"
-          >
-            <div className="text-lg font-semibold">Why Smart Link?</div>
-            <div className="mt-2 text-sm text-[#9CA3AF]">
+          <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+            <Typography variant="h6">Why Smart Link?</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Built for real-world traffic with rate limiting and deep analytics.
-            </div>
-
-            <div className="mt-6 space-y-4">
-              {[
-                { title: 'Fast UX', desc: 'Loading states, empty states, and premium UI polish.' },
-                { title: 'Actionable analytics', desc: 'Charts that help you understand clicks by device and country.' },
-                { title: 'Secure auth', desc: 'Refresh tokens in httpOnly cookies; no frontend secrets.' }
-              ].map((item) => (
-                <div key={item.title} className="rounded-2xl bg-secondaryCard/40 border border-[rgba(255,255,255,0.08)] p-4">
-                  <div className="font-medium">{item.title}</div>
-                  <div className="mt-1 text-sm text-[#9CA3AF]">{item.desc}</div>
-                </div>
+            </Typography>
+            <Stack spacing={2} sx={{ mt: 3 }}>
+              {REASONS.map((item) => (
+                <Paper key={item.title} variant="outlined" sx={{ p: 2, bgcolor: 'action.hover' }}>
+                  <Typography fontWeight={600}>{item.title}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {item.desc}
+                  </Typography>
+                </Paper>
               ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
+            </Stack>
+          </Paper>
+        </Box>
+      </Container>
+    </Box>
   )
 }
-

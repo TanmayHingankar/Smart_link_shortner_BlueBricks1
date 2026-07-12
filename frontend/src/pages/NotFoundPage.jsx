@@ -1,11 +1,20 @@
+import { Link as RouterLink } from 'react-router-dom'
+import { Box, Button, Typography } from '@mui/material'
+
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen bg-[#0B1220] text-[#F9FAFB] flex items-center justify-center p-6">
-      <div className="max-w-lg text-center">
-        <div className="text-5xl font-semibold tracking-tight">404</div>
-        <div className="mt-4 text-[#9CA3AF]">This page doesn’t exist.</div>
-      </div>
-    </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'grid', placeItems: 'center', p: 3 }}>
+      <Box sx={{ maxWidth: 480, textAlign: 'center' }}>
+        <Typography variant="h2" fontWeight={600}>
+          404
+        </Typography>
+        <Typography color="text.secondary" sx={{ mt: 2 }}>
+          This page doesn’t exist.
+        </Typography>
+        <Button component={RouterLink} to="/app/dashboard" variant="contained" sx={{ mt: 3 }}>
+          Back to dashboard
+        </Button>
+      </Box>
+    </Box>
   )
 }
-

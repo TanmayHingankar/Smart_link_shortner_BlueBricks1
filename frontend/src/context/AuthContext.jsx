@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { authApi } from '../api/authApi'
+import { clearAccessToken, setAccessToken } from '../api/tokenStore'
 
 const AuthContext = createContext(null)
 
@@ -12,20 +13,29 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const inFlightRef = useRef(null)
 
   const refreshAndGetMe = useCallback(async () => {
-    try {
-      // Backend uses httpOnly refresh cookie; we can attempt refresh then read /me.
-      await authApi.refresh()
-      const res = await authApi.me()
-      if (res?.data?.success) setUser(res.data.data.user)
-      else if (res?.data?.data?.user) setUser(res.data.data.user)
-      else setUser(null)
-    } catch {
-      setUser(null)
-    } finally {
-      setAuthLoading(false)
-    }
+    if (inFlightRef.current) return inFlightRef.current
+
+    const run = (async () => {
+      try {
+        const refreshRes = await authApi.refresh()
+        setAccessToken(refreshRes?.data?.data?.accessToken)
+        const res = await authApi.me()
+        if (res?.data?.data?.user) setUser(res.data.data.user)
+        else setUser(null)
+      } catch {
+        clearAccessToken()
+        setUser(null)
+      } finally {
+        setAuthLoading(false)
+        inFlightRef.current = null
+      }
+    })()
+
+    inFlightRef.current = run
+    return run
   }, [])
 
   useEffect(() => {
@@ -36,6 +46,7 @@ export function AuthProvider({ children }) {
     setAuthLoading(true)
     try {
       const res = await authApi.login(payload)
+      setAccessToken(res?.data?.data?.accessToken)
       const nextUser = res?.data?.data?.user ?? null
       setUser(nextUser)
       return res
@@ -48,6 +59,7 @@ export function AuthProvider({ children }) {
     setAuthLoading(true)
     try {
       const res = await authApi.register(payload)
+      setAccessToken(res?.data?.data?.accessToken)
       const nextUser = res?.data?.data?.user ?? null
       setUser(nextUser)
       return res
@@ -60,6 +72,7 @@ export function AuthProvider({ children }) {
     try {
       await authApi.logout()
     } finally {
+      clearAccessToken()
       setUser(null)
     }
   }, [])

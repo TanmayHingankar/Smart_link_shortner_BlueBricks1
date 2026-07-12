@@ -1,23 +1,46 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { motion } from 'framer-motion'
-import { LockKeyhole, Mail, Loader2 } from 'lucide-react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  InputAdornment,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
-import { Link, useNavigate } from 'react-router-dom'
+
+const FEATURES = [
+  { title: 'Premium link analytics', desc: 'Clicks, browsers, OS, platform, and country insights.' },
+  { title: 'Secure JWT auth', desc: 'Refresh token handling backed by httpOnly cookies.' },
+  { title: 'Rate limiting', desc: 'Protect your API from bursts while keeping UX smooth.' }
+]
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const { login, authLoading, refreshAndGetMe } = useAuth()
   const [formError, setFormError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
-  } = useForm({
-    defaultValues: { email: '', password: '' }
-  })
+  } = useForm({ defaultValues: { email: '', password: '' } })
+
+
+  const { ref: emailRef, ...emailField } = register('email', { required: 'Email is required' })
+  const { ref: passwordRef, ...passwordField } = register('password', { required: 'Password is required' })
 
   const onSubmit = async (values) => {
     setFormError('')
@@ -33,134 +56,123 @@ export default function LoginPage() {
     }
   }
 
+  const busy = authLoading || isSubmitting
+
   return (
-    <div className="min-h-screen bg-[#0B1220] text-[#F9FAFB]">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] shadow-soft flex items-center justify-center">
-              <LockKeyhole className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <div className="text-lg font-semibold tracking-tight">Smart Link</div>
-              <div className="text-xs text-[#9CA3AF]">Premium analytics & rate limiting</div>
-            </div>
-          </div>
-        </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: { xs: 5, sm: 7 } }}>
+      <Container maxWidth="lg">
+        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 5 }}>
+          <Paper sx={{ width: 40, height: 40, display: 'grid', placeItems: 'center' }}>
+            <LockOutlinedIcon color="primary" fontSize="small" />
+          </Paper>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700}>
+              Smart Link
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Premium analytics & rate limiting
+            </Typography>
+          </Box>
+        </Stack>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-gradient-to-b from-[#111827] to-[#0B1220] p-7 shadow-soft"
-          >
-            <div className="text-3xl font-semibold tracking-tight">Sign in</div>
-            <div className="mt-2 text-sm text-[#9CA3AF]">
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 3,
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            alignItems: 'stretch'
+          }}
+        >
+          <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+            <Typography variant="h4" gutterBottom>
+              Sign in
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
               Manage links, view analytics, and keep performance under control.
-            </div>
+            </Typography>
 
-            <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-4">
-                <label className="block">
-                  <div className="flex items-center gap-2 text-sm text-[#9CA3AF]">
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </div>
-                  <input
-                    aria-label="Email"
-                    className="mt-2 w-full rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] px-4 py-3 text-[#F9FAFB] placeholder-[#9CA3AF] shadow-soft focus:border-primary/60"
-                    placeholder="you@company.com"
-                    type="email"
-                    {...register('email', { required: 'Email is required' })}
-                  />
-                  {errors.email?.message && (
-                    <div className="mt-2 text-xs text-danger" role="alert">
-                      {errors.email.message}
-                    </div>
-                  )}
-                </label>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+              <Stack spacing={2.5}>
+                <TextField
+                  label="Email"
+                  type="email"
+                  fullWidth
+                  placeholder="you@company.com"
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  inputRef={emailRef}
+                  {...emailField}
+                />
+                <TextField
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  fullWidth
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword((v) => !v)}
+                            edge="end"
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }
+                  }}
+                  inputRef={passwordRef}
+                  {...passwordField}
+                />
 
-                <label className="block">
-                  <div className="flex items-center gap-2 text-sm text-[#9CA3AF]">
-                    <LockKeyhole className="h-4 w-4" />
-                    Password
-                  </div>
-                  <input
-                    aria-label="Password"
-                    className="mt-2 w-full rounded-2xl bg-[#111827] border border-[rgba(255,255,255,0.08)] px-4 py-3 text-[#F9FAFB] placeholder-[#9CA3AF] shadow-soft focus:border-primary/60"
-                    placeholder="••••••••"
-                    type="password"
-                    {...register('password', { required: 'Password is required' })}
-                  />
-                  {errors.password?.message && (
-                    <div className="mt-2 text-xs text-danger" role="alert">
-                      {errors.password.message}
-                    </div>
-                  )}
-                </label>
+                {formError && <Alert severity="error">{formError}</Alert>}
 
-                {formError ? (
-                  <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger" role="alert">
-                    {formError}
-                  </div>
-                ) : null}
+                <Button type="submit" variant="contained" size="large" fullWidth disabled={busy}>
+                  {busy ? 'Signing in…' : 'Sign in'}
+                </Button>
+              </Stack>
 
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={authLoading || isSubmitting}
-                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 font-semibold text-[#0B1220] shadow-soft hover:bg-hover disabled:opacity-60"
-                >
-                  {authLoading || isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Signing in…
-                    </>
-                  ) : (
-                    <>Sign in</>
-                  )}
-                </motion.button>
-              </div>
-
-              <div className="mt-5 text-center text-sm text-[#9CA3AF]">
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2.5 }}>
                 New here?{' '}
-                <Link className="text-primary hover:text-hover" to="/register">
+                <Link component={RouterLink} to="/register" underline="hover">
                   Create account
                 </Link>
-              </div>
-            </form>
-          </motion.div>
+              </Typography>
+            </Box>
+          </Paper>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.05 }}
-            className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] p-7 shadow-soft"
-          >
-            <div className="text-lg font-semibold">What you get</div>
-            <div className="mt-2 space-y-4">
-              {[
-                { title: 'Premium link analytics', desc: 'Clicks, browsers, OS, platform, and country insights.' },
-                { title: 'Secure JWT auth', desc: 'Refresh token handling backed by httpOnly cookies.' },
-                { title: 'Rate limiting', desc: 'Protect your API from bursts while keeping UX smooth.' }
-              ].map((item) => (
-                <div key={item.title} className="rounded-2xl bg-secondaryCard/40 border border-[rgba(255,255,255,0.08)] p-4">
-                  <div className="font-medium">{item.title}</div>
-                  <div className="mt-1 text-sm text-[#9CA3AF]">{item.desc}</div>
-                </div>
+          <Paper sx={{ p: { xs: 3, sm: 4 } }}>
+            <Typography variant="h6">What you get</Typography>
+            <Stack spacing={2} sx={{ mt: 2 }}>
+              {FEATURES.map((item) => (
+                <Paper key={item.title} variant="outlined" sx={{ p: 2, bgcolor: 'action.hover' }}>
+                  <Typography fontWeight={600}>{item.title}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {item.desc}
+                  </Typography>
+                </Paper>
               ))}
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-gradient-to-b from-primary/15 to-transparent p-4">
-              <div className="text-sm text-[#9CA3AF]">Tip</div>
-              <div className="mt-1 font-medium">After sign in, your dashboard is protected.</div>
-              <div className="mt-1 text-sm text-[#9CA3AF]">No API routes are changed—only UI is built.</div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
+            </Stack>
+            <Paper
+              variant="outlined"
+              sx={{ mt: 3, p: 2, background: 'linear-gradient(180deg, rgba(99,102,241,0.15), transparent)' }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                Tip
+              </Typography>
+              <Typography fontWeight={600} sx={{ mt: 0.5 }}>
+                After sign in, your dashboard is protected.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Refresh tokens in httpOnly cookies; no frontend secrets.
+              </Typography>
+            </Paper>
+          </Paper>
+        </Box>
+      </Container>
+    </Box>
   )
 }
-

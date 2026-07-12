@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom'
+import { Box } from '@mui/material'
 import { useAuth } from '../context/AuthContext'
 import Loader from '../components/Loader.jsx'
 
@@ -8,9 +9,9 @@ export default function ProtectedRoute({ children }) {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0B1220] flex items-center justify-center">
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'grid', placeItems: 'center' }}>
         <Loader label="Checking session…" />
-      </div>
+      </Box>
     )
   }
 

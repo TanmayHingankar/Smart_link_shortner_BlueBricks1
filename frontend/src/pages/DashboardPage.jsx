@@ -1,98 +1,224 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { BarChart3, Bolt, Link as LinkIcon, TrendingUp } from 'lucide-react'
-import Loader from '../components/Loader.jsx'
+import { Link as RouterLink } from 'react-router-dom'
+import {
+  Box,
+  Chip,
+  Container,
+  Link,
+  Paper,
+  Stack,
+  Typography
+} from '@mui/material'
+import LinkIcon from '@mui/icons-material/Link'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import BoltIcon from '@mui/icons-material/Bolt'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import ProfileMenu from '../components/ProfileMenu.jsx'
+import { linkApi } from '../api/linkApi'
+import { env } from '../config/env'
 
-export default function DashboardPage() {
-  // Backend API for dashboard-level aggregation is not present in routes.
-  // This page will still be functional using existing data sources when linked.
-  const [ready, setReady] = useState(true)
+const shortUrlFor = (link) => `${env.apiBaseUrl}/${link.customAlias || link.shortCode}`
 
-  useEffect(() => {
-    setReady(true)
-  }, [])
+const EMPTY_STATS = { totalLinks: 0, activeLinks: 0, totalClicks: 0, todaysClicks: 0 }
 
-  if (!ready) {
-    return (
-      <div className="p-6">
-        <Loader label="Loading dashboard…" />
-      </div>
-    )
-  }
-
+function StatCard({ label, value, icon, loading }) {
   return (
-    <div className="p-6">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="text-2xl font-semibold tracking-tight">Dashboard</div>
-            <div className="mt-1 text-sm text-[#9CA3AF]">Premium overview of your link performance.</div>
-          </div>
-          <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] px-4 py-2 text-sm text-[#9CA3AF]">
-            Session active
-          </div>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { label: 'Total Links', value: '—', icon: LinkIcon },
-            { label: 'Total Clicks', value: '—', icon: TrendingUp },
-            { label: "Today's Clicks", value: '—', icon: Bolt },
-            { label: 'Active Links', value: '—', icon: BarChart3 }
-          ].map((c) => (
-            <div key={c.label} className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] p-5 shadow-soft">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="text-sm text-[#9CA3AF]">{c.label}</div>
-                  <div className="mt-2 text-2xl font-semibold tracking-tight">{c.value}</div>
-                </div>
-                <div className="h-10 w-10 rounded-2xl bg-secondaryCard/40 border border-[rgba(255,255,255,0.08)] flex items-center justify-center">
-                  <c.icon className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] p-5 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-[#9CA3AF]">Latest Links</div>
-                <div className="mt-1 font-semibold tracking-tight">No recent data yet</div>
-              </div>
-              <div className="text-sm text-[#9CA3AF]">—</div>
-            </div>
-            <div className="mt-4 h-32 rounded-2xl bg-secondaryCard/40 border border-[rgba(255,255,255,0.08)]" />
-          </div>
-          <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] p-5 shadow-soft">
-            <div className="text-sm text-[#9CA3AF]">Quick Actions</div>
-            <div className="mt-1 font-semibold tracking-tight">Create & manage</div>
-            <div className="mt-4 space-y-3">
-              {[{ t: 'Create Link', d: 'Shorten a URL' }, { t: 'My Links', d: 'Search & delete' }].map((x) => (
-                <div key={x.t} className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-secondaryCard/40 px-4 py-3">
-                  <div className="font-medium">{x.t}</div>
-                  <div className="mt-1 text-sm text-[#9CA3AF]">{x.d}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#111827] p-5 shadow-soft">
-          <div className="text-sm text-[#9CA3AF]">Recent Activity</div>
-          <div className="mt-1 font-semibold tracking-tight">Analytics-ready events</div>
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {['Link created', 'First click', 'Analytics updated'].map((s) => (
-              <div key={s} className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-secondaryCard/40 px-4 py-3">
-                <div className="font-medium">{s}</div>
-                <div className="mt-1 text-sm text-[#9CA3AF]">—</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </div>
+    <Paper sx={{ p: 2.5 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            {label}
+          </Typography>
+          <Typography variant="h5" sx={{ mt: 1 }}>
+            {loading ? '—' : value.toLocaleString()}
+          </Typography>
+        </Box>
+        <Paper variant="outlined" sx={{ width: 40, height: 40, display: 'grid', placeItems: 'center', bgcolor: 'action.hover' }}>
+          {icon}
+        </Paper>
+      </Stack>
+    </Paper>
   )
 }
 
+export default function DashboardPage() {
+  const [loading, setLoading] = useState(true)
+  const [links, setLinks] = useState([])
+  const [stats, setStats] = useState(EMPTY_STATS)
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      setLoading(true)
+      try {
+        const [statsRes, listRes] = await Promise.all([linkApi.stats(), linkApi.list()])
+        if (cancelled) return
+        setStats(statsRes?.data?.data ?? EMPTY_STATS)
+        setLinks(listRes?.data?.data ?? [])
+      } catch {
+        if (!cancelled) {
+          setLinks([])
+          setStats(EMPTY_STATS)
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const latest = links.slice(0, 5)
+
+  const cards = [
+    { label: 'Total Links', value: stats.totalLinks, icon: <LinkIcon color="primary" /> },
+    { label: 'Total Clicks', value: stats.totalClicks, icon: <TrendingUpIcon color="primary" /> },
+    { label: "Today's Clicks", value: stats.todaysClicks, icon: <BoltIcon color="primary" /> },
+    { label: 'Active Links', value: stats.activeLinks, icon: <BarChartIcon color="primary" /> }
+  ]
+
+  const quickActions = [
+    { t: 'Create Link', d: 'Shorten a URL', to: '/app/create' },
+    { t: 'My Links', d: 'Search & manage', to: '/app/links' }
+  ]
+
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 3 }}>
+      <Container maxWidth="lg">
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+          <Box>
+            <Typography variant="h4">Dashboard</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Premium overview of your link performance.
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Chip label="Session active" variant="outlined" />
+            <ProfileMenu />
+          </Stack>
+        </Stack>
+
+        <Box
+          sx={{
+            mt: 3,
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4, 1fr)' }
+          }}
+        >
+          {cards.map((c) => (
+            <StatCard key={c.label} {...c} loading={loading} />
+          ))}
+        </Box>
+
+        <Box
+          sx={{
+            mt: 2,
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }
+          }}
+        >
+          <Paper sx={{ p: 2.5 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Latest Links
+                </Typography>
+                <Typography fontWeight={600} sx={{ mt: 0.5 }}>
+                  {loading ? 'Loading…' : latest.length ? 'Most recent' : 'No recent data yet'}
+                </Typography>
+              </Box>
+              <Link component={RouterLink} to="/app/links" underline="hover" variant="body2">
+                View all
+              </Link>
+            </Stack>
+
+            <Stack spacing={1} sx={{ mt: 2 }}>
+              {loading ? (
+                <Box sx={{ height: 128, borderRadius: 2, bgcolor: 'action.hover' }} />
+              ) : latest.length === 0 ? (
+                <Paper
+                  variant="outlined"
+                  sx={{ height: 128, display: 'grid', placeItems: 'center', borderStyle: 'dashed' }}
+                >
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Create your first link to get started.
+                    </Typography>
+                    <Link component={RouterLink} to="/app/create" underline="hover" variant="body2" sx={{ mt: 1, display: 'inline-block' }}>
+                      Create link
+                    </Link>
+                  </Box>
+                </Paper>
+              ) : (
+                latest.map((link) => (
+                  <Paper
+                    key={link._id}
+                    variant="outlined"
+                    sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, bgcolor: 'action.hover' }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Link
+                        href={shortUrlFor(link)}
+                        target="_blank"
+                        rel="noreferrer"
+                        underline="hover"
+                        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}
+                      >
+                        /{link.customAlias || link.shortCode}
+                        <OpenInNewIcon sx={{ fontSize: 14 }} />
+                      </Link>
+                      <Typography variant="caption" color="text.secondary" noWrap component="div" title={link.longUrl}>
+                        {link.longUrl}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+                      {link.createdAt ? new Date(link.createdAt).toLocaleDateString() : ''}
+                    </Typography>
+                  </Paper>
+                ))
+              )}
+            </Stack>
+          </Paper>
+
+          <Paper sx={{ p: 2.5 }}>
+            <Typography variant="body2" color="text.secondary">
+              Quick Actions
+            </Typography>
+            <Typography fontWeight={600} sx={{ mt: 0.5 }}>
+              Create & manage
+            </Typography>
+            <Stack spacing={1.5} sx={{ mt: 2 }}>
+              {quickActions.map((x) => (
+                <Paper
+                  key={x.t}
+                  component={RouterLink}
+                  to={x.to}
+                  variant="outlined"
+                  sx={{
+                    p: 1.5,
+                    display: 'block',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    bgcolor: 'action.hover',
+                    transition: 'border-color 0.2s',
+                    '&:hover': { borderColor: 'primary.main' }
+                  }}
+                >
+                  <Typography fontWeight={600}>{x.t}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {x.d}
+                  </Typography>
+                </Paper>
+              ))}
+            </Stack>
+          </Paper>
+        </Box>
+      </Container>
+    </Box>
+  )
+}

@@ -1,30 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   color-scheme: dark;
 }
 
 html,
-body {
+body,
+#root {
   height: 100%;
 }
-
-body {
-  margin: 0;
-  background: #0B1220;
-  color: #F9FAFB;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Premium focus ring */
-:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.45);
-  border-radius: 12px;
-}
-
