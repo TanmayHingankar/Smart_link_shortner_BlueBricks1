@@ -76,17 +76,25 @@ PORT=5000
 
 NODE_ENV=development
 
-MONGO_URI=your_mongodb_connection_string
+MONGO_URI= your_mongodb_connection_string
 
 CLIENT_URL=http://localhost:5173
 
-JWT_ACCESS_SECRET=your_access_secret
+JWT_ACCESS_SECRET = your_access_secret
 
-JWT_REFRESH_SECRET=your_refresh_secret
+JWT_REFRESH_SECRET = your_refresh_secret
 
 JWT_ACCESS_EXPIRES_IN=15m
 
 JWT_REFRESH_EXPIRES_IN=7d
+
+RL_CREATE_WINDOW_MS=60000
+
+RL_CREATE_MAX=10
+
+RL_BURST_WINDOW_MS=10000
+
+RL_BURST_THRESHOLD=30
 ```
 
 ## Frontend (.env)
