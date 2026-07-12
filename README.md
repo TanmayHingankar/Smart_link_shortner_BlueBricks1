@@ -259,6 +259,28 @@ The application follows a layered architecture where every layer has a clearly d
 This architecture improves maintainability, scalability and separation of concerns.
 
 ---
+### Screenshots / Demo 
+
+<img width="1917" height="975" alt="Screenshot 2026-07-13 001331" src="https://github.com/user-attachments/assets/5abba969-19d1-4fe0-ba39-094cf49a5609" />
+
+<img width="1917" height="968" alt="Screenshot 2026-07-13 001340" src="https://github.com/user-attachments/assets/b1b6ba8c-2b6f-410e-99d2-f96ae9d98924" />
+
+<img width="1917" height="980" alt="Screenshot 2026-07-13 001401" src="https://github.com/user-attachments/assets/7dbe87bb-3d20-4885-af83-c32945cf322e" />
+
+<img width="1916" height="962" alt="Screenshot 2026-07-13 001441" src="https://github.com/user-attachments/assets/b1f7cd7b-6111-4b35-97dd-28755e367c77" />
+
+<img width="1917" height="972" alt="Screenshot 2026-07-13 001511" src="https://github.com/user-attachments/assets/f0dc1557-50e7-44a7-8963-f4a90d203568" />
+
+<img width="1916" height="966" alt="Screenshot 2026-07-13 001522" src="https://github.com/user-attachments/assets/5b482c0a-096c-4280-a8d7-10644334d2be" />
+
+<img width="1917" height="970" alt="Screenshot 2026-07-13 001534" src="https://github.com/user-attachments/assets/7a27c233-d549-4aad-a185-8f8d8a3a633e" />
+
+<img width="1916" height="976" alt="Screenshot 2026-07-13 001554" src="https://github.com/user-attachments/assets/31259916-7bb8-40a2-998a-8fce2e54e76a" />
+
+<img width="1917" height="967" alt="Screenshot 2026-07-13 001608" src="https://github.com/user-attachments/assets/cd22aabd-7793-4b9d-8bf3-989df6875870" />
+
+<img width="1905" height="950" alt="Screenshot 2026-07-13 001624" src="https://github.com/user-attachments/assets/ba8b56c0-27b0-49d3-b811-29b8d7ad4e10" />
+
 
 # Backend Architecture
 
