@@ -676,7 +676,7 @@ The frontend provides a clean and responsive SaaS dashboard with reusable compon
 - Recharts
 - Framer Motion
 - React Hot Toast
-- Lucide React
+- Material Ui
 
 ---
 
@@ -688,7 +688,6 @@ The frontend provides a clean and responsive SaaS dashboard with reusable compon
 - Mongoose
 - JWT Authentication
 - bcrypt
-- Zod Validation
 - Express Rate Limit
 
 ---
